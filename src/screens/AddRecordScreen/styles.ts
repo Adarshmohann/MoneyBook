@@ -1,0 +1,120 @@
+import { StyleSheet } from 'react-native';
+import { theme } from '../../utils/theme';
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  scrollContent: {
+    padding: theme.spacing.lg,
+  },
+  scanSection: {
+    marginBottom: theme.spacing.xl,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.md,
+    letterSpacing: 0.5,
+  },
+  scanButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  scanButton: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    paddingVertical: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.borderRadius.xl,
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
+    shadowColor: theme.colors.shadowColor,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 3,
+    flex: 0.48,
+  },
+  iconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(0, 208, 158, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 208, 158, 0.3)',
+  },
+  iconEmoji: {
+    fontSize: 30,
+  },
+  scanButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+  },
+  processingText: {
+    textAlign: 'center',
+    marginTop: theme.spacing.md,
+    color: theme.colors.primary,
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    marginVertical: theme.spacing.lg,
+  },
+  formSection: {
+    flex: 1,
+  },
+  inputGroup: {
+    marginBottom: theme.spacing.lg,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textSecondary,
+    marginBottom: 8,
+    letterSpacing: 0.5,
+  },
+  input: {
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    paddingHorizontal: theme.spacing.lg,
+    height: 60,
+    fontSize: 16,
+    color: theme.colors.textPrimary,
+    fontWeight: '500',
+  },
+  footer: {
+    padding: theme.spacing.lg,
+    backgroundColor: theme.colors.background,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
+  saveButton: {
+    backgroundColor: theme.colors.primary,
+    height: 60,
+    borderRadius: theme.borderRadius.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: theme.colors.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 5,
+  },
+  saveButtonText: {
+    color: '#0B0C10',
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+});
