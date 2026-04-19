@@ -7,6 +7,7 @@ import {
   ScrollView,
   Platform,
   Alert,
+  PermissionsAndroid,
 } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import TextRecognition from '@react-native-ml-kit/text-recognition';
@@ -15,6 +16,7 @@ import { insertRecord } from '../../database/db';
 import { theme } from '../../utils/theme';
 import AppLayout from '../../components/Layout';
 import { styles } from './styles';
+import { Camera, ImageIcon } from '../../components/Icons';
 
 const AddRecordScreen: React.FC<AddRecordScreenProps> = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -72,8 +74,34 @@ const AddRecordScreen: React.FC<AddRecordScreenProps> = ({ navigation }) => {
     }
   };
 
-  const handleCameraScan = async () => {
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Camera Permission',
+            message: 'App needs camera permission to scan amounts.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+    return true;
+  };
 
+  const handleCameraScan = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) {
+      Alert.alert("Permission Required", "Camera permission is needed to scan receipts.");
+      return;
+    }
 
     const result = await launchCamera({ mediaType: 'photo', quality: 0.8 });
     console.log("result", result);
@@ -108,7 +136,7 @@ const AddRecordScreen: React.FC<AddRecordScreenProps> = ({ navigation }) => {
               disabled={isProcessing}
             >
               <View style={styles.iconCircle}>
-                <Text style={styles.iconEmoji}>📷</Text>
+                <Camera color={theme.colors.textHighlight} size={28} strokeWidth={2} />
               </View>
               <Text style={styles.scanButtonText}>Camera</Text>
             </TouchableOpacity>
@@ -119,7 +147,7 @@ const AddRecordScreen: React.FC<AddRecordScreenProps> = ({ navigation }) => {
               disabled={isProcessing}
             >
               <View style={styles.iconCircle}>
-                <Text style={styles.iconEmoji}>🖼️</Text>
+                <ImageIcon color={theme.colors.textHighlight} size={28} strokeWidth={2} />
               </View>
               <Text style={styles.scanButtonText}>Gallery</Text>
             </TouchableOpacity>

@@ -14,6 +14,7 @@ import {getAllRecords, searchRecords} from '../../database/db';
 import RecordCard from '../../components/RecordCard/RecordCard';
 import {theme} from '../../utils/theme';
 import {styles} from './styles';
+import { Search, X, ReceiptText, Plus } from '../../components/Icons';
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [records, setRecords] = useState<MoneyRecord[]>([]);
@@ -55,7 +56,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
-        <Text style={styles.searchIcon}>🔍</Text>
+        <Search color={theme.colors.textSecondary} size={20} style={{marginRight: 8}} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search entries..."
@@ -64,8 +65,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           onChangeText={setSearchQuery}
         />
         {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Text style={styles.clearIcon}>✖</Text>
+          <TouchableOpacity onPress={() => setSearchQuery('')} style={{padding: 8}}>
+            <X color={theme.colors.textSecondary} size={20} />
           </TouchableOpacity>
         )}
       </View>
@@ -79,7 +80,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>📝</Text>
+            <ReceiptText color={theme.colors.textSecondary} size={64} opacity={0.6} />
             <Text style={styles.emptyText}>
               {searchQuery ? 'No records found.' : 'Your ledger is empty.\nAdd your first record!'}
             </Text>
@@ -92,7 +93,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         style={styles.fab}
         onPress={() => navigation.navigate('AddRecord')}
         activeOpacity={0.85}>
-        <Text style={styles.fabText}>➕</Text>
+        <Plus color="#0B0C10" size={36} strokeWidth={2.5} />
       </TouchableOpacity>
     </AppLayout>
   );
