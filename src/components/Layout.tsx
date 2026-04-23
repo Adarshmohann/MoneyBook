@@ -8,7 +8,6 @@ import {
   View,
 } from "react-native";
 import {
-  SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
@@ -31,44 +30,40 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   scrollable = false,
   topColor = "white",
   bottomColor = "white",
-  gradientColors,
   bottom  = true ,
   behaviour 
 }) => {
   const insets = useSafeAreaInsets();
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
 
-const headerHeight :any = Platform.OS === 'android' ? StatusBar.currentHeight : 0;
+  useEffect(() => {
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow', 
+      () => setKeyboardVisible(true)
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide', 
+      () => setKeyboardVisible(false)
+    );
 
-const [keyboardOffset, setKeyboardOffset] = useState(-30); // default offset
-const [keyboardup, setKeyboardup] = useState(false);
-
-useEffect(() => {
-  const showSub = Keyboard.addListener('keyboardDidShow', (e: any) => {
-    setKeyboardup(true);
-  });
-
-  const hideSub = Keyboard.addListener('keyboardDidHide', () => {
-    setKeyboardup(false);
-  });
-
-  return () => {
-    showSub.remove();
-    hideSub.remove();
-  };
-}, []);
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: topColor }}>
       <StatusBar
         translucent={false}
         backgroundColor={topColor}
-        barStyle={barStyle??"dark-content"}  
+        barStyle={barStyle ?? "dark-content"}  
       />
 
-      <KeyboardAvoidingView style={{ flex: 1 }} 
-      behavior="padding" 
-      // keyboardVerticalOffset={keyboardup?-50:0} 
-      enabled={keyboardup} 
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={behaviour ?? (Platform.OS === 'ios' ? 'padding' : 'height')}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <View
           style={{
@@ -78,29 +73,27 @@ useEffect(() => {
             paddingRight: insets.right,
           }}
         >
-          
-            {scrollable ? (
-              <ScrollView
-                contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start' }}
-                keyboardShouldPersistTaps="handled"
-                bounces={false}
-                overScrollMode="never"
-                nestedScrollEnabled
-                showsVerticalScrollIndicator={false}
-                
-              >
-                {children}
-              </ScrollView>
-            ) : (
-              <View style={{ flex: 1 }}>{children}</View>
-            )}
-
+          {scrollable ? (
+            <ScrollView
+              contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start' }}
+              keyboardShouldPersistTaps="handled"
+              bounces={false}
+              overScrollMode="never"
+              nestedScrollEnabled
+              showsVerticalScrollIndicator={false}
+            >
+              {children}
+            </ScrollView>
+          ) : (
+            <View style={{ flex: 1 }}>{children}</View>
+          )}
         </View>
       </KeyboardAvoidingView>
 
-      {bottom && <View style={{ height: insets.bottom, backgroundColor: bottomColor }} />}
-
-
+      {/* Hide bottom inset when keyboard is up to allow footer to sit flush on keyboard */}
+      {bottom && !keyboardVisible && (
+        <View style={{ height: insets.bottom, backgroundColor: bottomColor }} />
+      )}
     </View>
   );
 };

@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   header: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: 20,
     paddingTop: theme.spacing.xl,
     paddingBottom: theme.spacing.md,
   },
@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
-    marginHorizontal: theme.spacing.lg,
+    marginHorizontal: 20,
     marginVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.md,
     borderRadius: theme.borderRadius.full, // Ultra round pill
@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
     padding: theme.spacing.sm,
   },
   listContainer: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: 20,
     paddingTop: theme.spacing.sm,
     paddingBottom: 120, // Make room for FAB securely
   },

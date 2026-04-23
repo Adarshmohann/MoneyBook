@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,15 +12,17 @@ import {
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import TextRecognition from '@react-native-ml-kit/text-recognition';
 import { AddRecordScreenProps } from '../../navigation/types';
-import { insertRecord } from '../../database/db';
+import { insertRecord, updateRecord } from '../../database/db';
 import { theme } from '../../utils/theme';
 import AppLayout from '../../components/Layout';
 import { styles } from './styles';
-import { Camera, ImageIcon } from '../../components/Icons';
+import { Camera, ImageIcon, ArrowLeft } from '../../components/Icons';
 
-const AddRecordScreen: React.FC<AddRecordScreenProps> = ({ navigation }) => {
-  const [name, setName] = useState('');
-  const [amount, setAmount] = useState('');
+const AddRecordScreen: React.FC<AddRecordScreenProps> = ({ navigation, route }) => {
+  const editRecord = route.params?.record;
+  
+  const [name, setName] = useState(editRecord?.name || '');
+  const [amount, setAmount] = useState(editRecord?.amount.toString() || '');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSave = () => {
@@ -34,7 +36,11 @@ const AddRecordScreen: React.FC<AddRecordScreenProps> = ({ navigation }) => {
       return;
     }
 
-    insertRecord(name.trim(), numAmount);
+    if (editRecord) {
+      updateRecord(editRecord.id, name.trim(), numAmount);
+    } else {
+      insertRecord(name.trim(), numAmount);
+    }
     navigation.goBack();
   };
 
@@ -42,14 +48,11 @@ const AddRecordScreen: React.FC<AddRecordScreenProps> = ({ navigation }) => {
     setIsProcessing(true);
     try {
       const result = await TextRecognition.recognize(imageUri);
-
       let foundName = '';
       let foundAmount = '';
-
       const lines = result.text.split('\n');
       for (const line of lines) {
         const cleanLine = line.trim();
-
         const amountMatch = cleanLine.match(/(?:rs\.?|₹|inr)?\s*(\d+(?:,\d+)*)\s*(?:\/-)?/i);
         if (amountMatch && !foundAmount) {
           foundAmount = amountMatch[1].replace(/,/g, '');
@@ -57,140 +60,127 @@ const AddRecordScreen: React.FC<AddRecordScreenProps> = ({ navigation }) => {
           foundName = cleanLine;
         }
       }
-
       if (foundName) setName(foundName);
       if (foundAmount) setAmount(foundAmount);
-
       if (!foundName && !foundAmount) {
-        Alert.alert('Analysis Complete', 'Could not automatically detect a name or amount. Please enter manually.', [{ text: 'OK' }]);
-      } else {
-        Alert.alert('Extracted text', 'Please review the extracted name and amount.', [{ text: 'OK' }]);
+        Alert.alert('Analysis Complete', 'Could not detect details. Please enter manually.');
       }
     } catch (error) {
-      console.error('OCR Error:', error);
       Alert.alert('Error', 'Failed to process image text.');
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const requestCameraPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          {
-            title: 'Camera Permission',
-            message: 'App needs camera permission to scan amounts.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        return false;
-      }
-    }
-    return true;
-  };
-
   const handleCameraScan = async () => {
-    const hasPermission = await requestCameraPermission();
-    if (!hasPermission) {
-      Alert.alert("Permission Required", "Camera permission is needed to scan receipts.");
-      return;
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) return;
     }
-
     const result = await launchCamera({ mediaType: 'photo', quality: 0.8 });
-    console.log("result", result);
-    if (result.assets && result.assets.length > 0) {
-      const uri = result.assets[0].uri;
-      if (uri) {
-        await processImageText(uri);
-      }
-    }
+    if (result.assets?.[0]?.uri) await processImageText(result.assets[0].uri);
   };
 
   const handleGalleryScan = async () => {
     const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.8 });
-    if (result.assets && result.assets.length > 0) {
-      const uri = result.assets[0].uri;
-      if (uri) {
-        await processImageText(uri);
-      }
-    }
+    if (result.assets?.[0]?.uri) await processImageText(result.assets[0].uri);
   };
 
   return (
     <AppLayout scrollable={false} topColor={theme.colors.background} bottomColor={theme.colors.background} barStyle="light-content">
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
-
-        <View style={styles.scanSection}>
-          <Text style={styles.sectionTitle}>Smart Scan (OCR)</Text>
-          <View style={styles.scanButtonsRow}>
-            <TouchableOpacity
-              style={styles.scanButton}
-              onPress={handleCameraScan}
-              disabled={isProcessing}
-            >
-              <View style={styles.iconCircle}>
-                <Camera color={theme.colors.textHighlight} size={28} strokeWidth={2} />
-              </View>
-              <Text style={styles.scanButtonText}>Camera</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.scanButton}
-              onPress={handleGalleryScan}
-              disabled={isProcessing}
-            >
-              <View style={styles.iconCircle}>
-                <ImageIcon color={theme.colors.textHighlight} size={28} strokeWidth={2} />
-              </View>
-              <Text style={styles.scanButtonText}>Gallery</Text>
-            </TouchableOpacity>
-          </View>
-          {isProcessing && <Text style={styles.processingText}>Processing image...</Text>}
+      <View style={styles.container}>
+        {/* Custom Header */}
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={() => navigation.goBack()}
+          >
+            <ArrowLeft color={theme.colors.textPrimary} size={28} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>
+            {editRecord ? 'Edit Record' : 'Add New Record'}
+          </Text>
+          <View style={styles.headerPlaceholder} />
         </View>
 
-        <View style={styles.divider} />
+        {/* Content */}
+        <ScrollView 
+          style={{ flex: 1 }} 
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.scanSection}>
+            <Text style={styles.sectionTitle}>Smart Scan (OCR)</Text>
+            <View style={styles.scanButtonsRow}>
+              <TouchableOpacity
+                style={styles.scanButton}
+                onPress={handleCameraScan}
+                disabled={isProcessing}
+              >
+                <View style={styles.iconCircle}>
+                  <Camera color={theme.colors.textHighlight} size={28} strokeWidth={2.2} />
+                </View>
+                <Text style={styles.scanButtonText}>Camera</Text>
+              </TouchableOpacity>
 
-        <View style={styles.formSection}>
-          <Text style={styles.sectionTitle}>Manual Entry</Text>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Full Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. John Doe"
-              placeholderTextColor={theme.colors.textSecondary}
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-            />
+              <TouchableOpacity
+                style={styles.scanButton}
+                onPress={handleGalleryScan}
+                disabled={isProcessing}
+              >
+                <View style={styles.iconCircle}>
+                  <ImageIcon color={theme.colors.textHighlight} size={28} strokeWidth={2.2} />
+                </View>
+                <Text style={styles.scanButtonText}>Gallery</Text>
+              </TouchableOpacity>
+            </View>
+            {isProcessing && <Text style={styles.processingText}>Processing your receipt...</Text>}
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Amount Given (₹)</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="0"
-              placeholderTextColor={theme.colors.textSecondary}
-              value={amount}
-              onChangeText={setAmount}
-              keyboardType="numeric"
-            />
+          <View style={styles.divider} />
+
+          <View style={styles.formSection}>
+            <Text style={styles.sectionTitle}>Manual Entry</Text>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Recipient Name</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter name"
+                placeholderTextColor={theme.colors.textSecondary}
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Amount Given (₹)</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="0"
+                placeholderTextColor={theme.colors.textSecondary}
+                value={amount}
+                onChangeText={setAmount}
+                keyboardType="numeric"
+              />
+            </View>
           </View>
+        </ScrollView>
+
+        {/* Fixed Footer */}
+        <View style={styles.footer}>
+          <TouchableOpacity 
+            style={styles.saveButton} 
+            onPress={handleSave} 
+            activeOpacity={0.8}
+          >
+            <Text style={styles.saveButtonText}>
+              {editRecord ? 'Update Record' : 'Save Record'}
+            </Text>
+          </TouchableOpacity>
         </View>
-
-      </ScrollView>
-
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Save Record</Text>
-        </TouchableOpacity>
       </View>
     </AppLayout>
   );

@@ -28,6 +28,14 @@ export const getAllRecords = (): MoneyRecord[] => {
   return (result.rows as unknown as MoneyRecord[]) || [];
 };
 
+export const getRecordsPaginated = (limit: number, offset: number): MoneyRecord[] => {
+  const result = db.executeSync(
+    'SELECT * FROM money_records ORDER BY created_at DESC LIMIT ? OFFSET ?',
+    [limit, offset]
+  );
+  return (result.rows as unknown as MoneyRecord[]) || [];
+};
+
 export const searchRecords = (keyword: string): MoneyRecord[] => {
   const searchTerm = `%${keyword}%`;
   const result = db.executeSync(
@@ -35,6 +43,21 @@ export const searchRecords = (keyword: string): MoneyRecord[] => {
     [searchTerm],
   );
   return (result.rows as unknown as MoneyRecord[]) || [];
+};
+
+export const searchRecordsPaginated = (keyword: string, limit: number, offset: number): MoneyRecord[] => {
+  const searchTerm = `%${keyword}%`;
+  const result = db.executeSync(
+    'SELECT * FROM money_records WHERE name LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+    [searchTerm, limit, offset]
+  );
+  return (result.rows as unknown as MoneyRecord[]) || [];
+};
+
+export const getRecordById = (id: number): MoneyRecord | null => {
+  const result = db.executeSync('SELECT * FROM money_records WHERE id = ?', [id]);
+  const rows = (result.rows as unknown as MoneyRecord[]) || [];
+  return rows.length > 0 ? rows[0] : null;
 };
 
 export const deleteRecord = (id: number): void => {
@@ -47,4 +70,27 @@ export const updateRecord = (id: number, name: string, amount: number): void => 
     amount,
     id,
   ]);
+};
+
+export const bulkInsertRecords = async (records: {name: string; amount: number}[]): Promise<void> => {
+  const existingRecords = getAllRecords();
+  const existingSet = new Set(
+    existingRecords.map(r => `${r.name.toLowerCase()}_${r.amount}`)
+  );
+
+  const newRecords = records.filter(
+    r => !existingSet.has(`${r.name.toLowerCase()}_${r.amount}`)
+  );
+
+  if (newRecords.length === 0) return;
+
+  await db.transaction(async tx => {
+    const createdAt = Date.now();
+    for (const record of newRecords) {
+      tx.execute(
+        'INSERT INTO money_records (name, amount, created_at) VALUES (?, ?, ?)',
+        [record.name, record.amount, createdAt]
+      );
+    }
+  });
 };

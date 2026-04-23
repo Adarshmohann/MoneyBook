@@ -3,6 +3,7 @@ import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/HomeScreen/HomeScreen';
 import AddRecordScreen from '../screens/AddRecordScreen/AddRecordScreen';
+import RecordDetailScreen from '../screens/RecordDetail/RecordDetailScreen';
 import { RootStackParamList } from './types';
 import { theme } from '../utils/theme';
 
@@ -31,10 +32,17 @@ const AppNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="RecordDetail"
+          component={RecordDetailScreen}
+          options={{
+            title: 'Transaction Details',
+          }}
+        />
+        <Stack.Screen
           name="AddRecord"
           component={AddRecordScreen}
           options={{
-            title: 'New Record',
+            headerShown: false,
           }}
         />
       </Stack.Navigator>

@@ -6,10 +6,10 @@ export const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.lg,
     borderRadius: theme.borderRadius.lg,
-    marginBottom: theme.spacing.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: theme.spacing.md,
     
     // Modern minimal shadow
     shadowColor: theme.colors.shadowColor,
@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   amountContainer: {
-    backgroundColor: 'rgba(0, 208, 158, 0.1)', // Vibrant green tinted background
+    backgroundColor: 'rgba(0, 208, 158, 0.1)',
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
     borderRadius: theme.borderRadius.full,
