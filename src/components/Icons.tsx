@@ -86,8 +86,25 @@ export const ArrowLeft = ({color = 'black', size = 24, strokeWidth = 2, opacity 
   </Svg>
 );
 
-export const ChevronLeft = ({color = 'black', size = 24, strokeWidth = 2, opacity = 1, style, ...props}: IconProps) => (
+export const CheckCircle = ({color = 'black', size = 24, strokeWidth = 2, opacity = 1, style, ...props}: IconProps) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" opacity={opacity} style={style} {...props}>
-    <Path d="m15 18-6-6 6-6" />
+    <Path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <Path d="m9 11 3 3L22 4" />
+  </Svg>
+);
+
+export const AlertTriangle = ({color = 'black', size = 24, strokeWidth = 2, opacity = 1, style, ...props}: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" opacity={opacity} style={style} {...props}>
+    <Path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+    <Path d="M12 9v4" />
+    <Path d="M12 17h.01" />
+  </Svg>
+);
+
+export const Info = ({color = 'black', size = 24, strokeWidth = 2, opacity = 1, style, ...props}: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" opacity={opacity} style={style} {...props}>
+    <Circle cx="12" cy="12" r="10" />
+    <Path d="M12 16v-4" />
+    <Path d="M12 8h.01" />
   </Svg>
 );

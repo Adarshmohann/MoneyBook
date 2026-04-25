@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
     marginLeft: -8,
   },
   headerPlaceholder: {
-    width: 40, // Match backButton width for balance
+    width: 40,
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -34,7 +34,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   scanSection: {
-    marginBottom: 30,
+    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,
@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
   scanButton: {
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
-    paddingVertical: 24,
+    paddingVertical: 20,
     borderRadius: 24,
     borderWidth: 1,
     borderColor: theme.colors.glassBorder,
@@ -62,24 +62,29 @@ export const styles = StyleSheet.create({
     elevation: 3,
   },
   iconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 18,
+    width: 50,
+    height: 50,
+    borderRadius: 16,
     backgroundColor: 'rgba(0, 208, 158, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
     borderWidth: 1,
     borderColor: 'rgba(0, 208, 158, 0.3)',
   },
   scanButtonText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
     color: theme.colors.textPrimary,
   },
-  processingText: {
-    textAlign: 'center',
+  processingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 16,
+    gap: 8,
+  },
+  processingText: {
     color: theme.colors.primary,
     fontWeight: '700',
     fontSize: 14,
@@ -87,34 +92,56 @@ export const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: theme.colors.border,
-    marginVertical: 24,
+    marginVertical: 20,
     opacity: 0.5,
   },
   formSection: {
     flex: 1,
   },
-  inputGroup: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: theme.colors.textSecondary,
-    marginBottom: 10,
-    marginLeft: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  input: {
-    backgroundColor: theme.colors.surface,
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 208, 158, 0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    gap: 4,
     borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 16,
-    paddingHorizontal: 20,
-    height: 64,
-    fontSize: 17,
+    borderColor: 'rgba(0, 208, 158, 0.2)',
+  },
+  addButtonText: {
+    color: theme.colors.primary,
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  entryRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    backgroundColor: theme.colors.surface,
+    padding: 12,
+    borderRadius: 18,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.glassBorder,
+  },
+  entryLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: theme.colors.textSecondary,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  entryInput: {
+    fontSize: 16,
     color: theme.colors.textPrimary,
     fontWeight: '600',
+    padding: 0,
+    height: 30,
+  },
+  removeButton: {
+    padding: 8,
+    marginBottom: -4,
   },
   footer: {
     paddingHorizontal: 20,
@@ -126,7 +153,7 @@ export const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: theme.colors.primary,
-    height: 64,
+    height: 60,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -138,9 +165,9 @@ export const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: '#0B0C10',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '900',
     textTransform: 'uppercase',
-    letterSpacing: 1.5,
+    letterSpacing: 1,
   },
 });

@@ -73,20 +73,11 @@ export const updateRecord = (id: number, name: string, amount: number): void => 
 };
 
 export const bulkInsertRecords = async (records: {name: string; amount: number}[]): Promise<void> => {
-  const existingRecords = getAllRecords();
-  const existingSet = new Set(
-    existingRecords.map(r => `${r.name.toLowerCase()}_${r.amount}`)
-  );
-
-  const newRecords = records.filter(
-    r => !existingSet.has(`${r.name.toLowerCase()}_${r.amount}`)
-  );
-
-  if (newRecords.length === 0) return;
+  if (records.length === 0) return;
 
   await db.transaction(async tx => {
     const createdAt = Date.now();
-    for (const record of newRecords) {
+    for (const record of records) {
       tx.execute(
         'INSERT INTO money_records (name, amount, created_at) VALUES (?, ?, ?)',
         [record.name, record.amount, createdAt]
